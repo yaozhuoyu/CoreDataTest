@@ -7,8 +7,16 @@
 //
 
 #import "AppDelegate.h"
+#import "Techer.h"
+#import "Student.h"
+#import "TestUtil.h"
 
-@implementation AppDelegate
+@implementation AppDelegate{
+    Techer *atecher;
+    Student *astudent;
+    TestUtil *testUtil_;
+    
+}
 
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
@@ -20,7 +28,154 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    
+    //[self createData];
+    
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(objectDidChange:) name:NSManagedObjectContextObjectsDidChangeNotification object:self.managedObjectContext];
+    
+    //[self testCoreData];
+    //[self importLargeDatas];
+    
+    //[self testManagedObjectContextInsertObjectMethod];
+    //[self childContextSaveLargeDatas];
+    
+    testUtil_ = [[TestUtil alloc] init];
+    testUtil_.appDelegate = self;
+    [testUtil_ onTest];
+    
+    
+    UIViewController *rrot = [[UIViewController alloc] init];
+    self.window.rootViewController = rrot;
     return YES;
+}
+
+
+
+
+- (void)childContextSaveLargeDatas {
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    [childContext setParentContext:self.managedObjectContext];
+    
+    NSLog(@"begin import");
+    for (NSUInteger index = 0; index < 5000; index++) {
+        Techer *tt = [NSEntityDescription insertNewObjectForEntityForName:@"Techer" inManagedObjectContext:childContext];
+        tt.name = [NSString stringWithFormat:@"techer name :(%d)", index];
+        
+        
+        for (NSUInteger jndex = 0; jndex < 50; jndex++) {
+            Student *student = [NSEntityDescription insertNewObjectForEntityForName:@"Student" inManagedObjectContext:childContext];
+            student.name = [NSString stringWithFormat:@"student name :(%d)", jndex];
+            [tt addStudentsObject:student];
+        }
+    }
+    NSLog(@"end import");
+    
+    [childContext save:NULL];
+    NSLog(@"save child context");
+    [self saveContext];
+    NSLog(@"save root context");
+    [self.managedObjectContext reset];
+    
+    
+}
+
+- (void)testManagedObjectContextInsertObjectMethod {
+    Techer *techer = [NSEntityDescription insertNewObjectForEntityForName:@"Techer" inManagedObjectContext:self.managedObjectContext];
+    techer.name = [NSString stringWithFormat:@"techer name insert"];
+    atecher = techer;
+    
+    Student *student = [NSEntityDescription insertNewObjectForEntityForName:@"Student" inManagedObjectContext:self.managedObjectContext];
+    student.name = [NSString stringWithFormat:@"student name insert"];
+    [techer addStudentsObject:student];
+    astudent = student;
+    
+    NSLog(@"techer before save is fault %d , register count %d", [techer isFault], [[self.managedObjectContext registeredObjects] count]);
+    [self saveContext];
+    NSLog(@"techer after save is fault %d , register count %d", [techer isFault], [[self.managedObjectContext registeredObjects] count]);
+    
+    [self.managedObjectContext refreshObject:techer mergeChanges:NO];
+    NSLog(@"techer after refreshObject is fault %d , register count %d", [techer isFault], [[self.managedObjectContext registeredObjects] count]);
+    NSLog(@"student fault %d", [student isFault]);
+}
+
+- (void)importLargeDatas {
+    NSLog(@"begin import  register count %d", [[self.managedObjectContext registeredObjects] count]);
+    for (NSUInteger index = 0; index < 5000; index++) {
+        Techer *tt = [NSEntityDescription insertNewObjectForEntityForName:@"Techer" inManagedObjectContext:self.managedObjectContext];
+        tt.name = [NSString stringWithFormat:@"techer name :(%d)", index];
+        
+        
+        for (NSUInteger jndex = 0; jndex < 50; jndex++) {
+            Student *student = [NSEntityDescription insertNewObjectForEntityForName:@"Student" inManagedObjectContext:self.managedObjectContext];
+            student.name = [NSString stringWithFormat:@"student name :(%d)", jndex];
+            [tt addStudentsObject:student];
+        }
+    }
+    NSLog(@"end import %d", [[self.managedObjectContext registeredObjects] count]);
+    [self saveContext];
+    NSLog(@"save import %d", [[self.managedObjectContext registeredObjects] count]);
+    [self.managedObjectContext reset];
+    NSLog(@"reset context %d", [[self.managedObjectContext registeredObjects] count]);
+}
+
+
+//- (void)objectDidChange:(NSNotification *)notification{
+//    NSDictionary *dict = notification.userInfo;
+//    NSLog(@"dict did change : %@", dict);
+//}
+
+- (void)createData {
+    Student *student = [NSEntityDescription insertNewObjectForEntityForName:@"Student" inManagedObjectContext:self.managedObjectContext];
+    student.name = @"yzy1";
+    
+    Student *student2 = [NSEntityDescription insertNewObjectForEntityForName:@"Student" inManagedObjectContext:self.managedObjectContext];
+    student2.name = @"yzy2";
+    
+    Techer *tt = [NSEntityDescription insertNewObjectForEntityForName:@"Techer" inManagedObjectContext:self.managedObjectContext];
+    tt.name = @"tttt";
+    
+    [tt addStudentsObject:student];
+    student2.techer = tt;
+    
+    [self saveContext];
+}
+
+- (void)testCoreData {
+    /*
+    NSFetchRequest *existingFetch = [NSFetchRequest fetchRequestWithEntityName:@"Student"];
+    //[existingFetch setReturnsObjectsAsFaults:NO];
+    [existingFetch setRelationshipKeyPathsForPrefetching:@[@"techer"]];
+    existingFetch.predicate = [NSPredicate predicateWithFormat:@"name == %@", @"yzy1"];
+    NSArray *array = [self.managedObjectContext executeFetchRequest:existingFetch error:NULL];
+    if ([array count] > 0) {
+        Student *ss = [array firstObject];
+        NSLog(@"ss  is Fault %d", [ss isFault]);
+        NSLog(@" ss name %@", ss.name);
+        NSLog(@"ss  is Fault %d", [ss isFault]);
+        NSLog(@"ss techer is Fault  %d", [ss.techer isFault]);
+        NSLog(@"ss techer  name  %@", ss.techer.name);
+    }
+    */
+    //[self.managedObjectContext setStalenessInterval:0.0];
+    NSFetchRequest *existingFetch = [NSFetchRequest fetchRequestWithEntityName:@"Techer"];
+    //[existingFetch setRelationshipKeyPathsForPrefetching:@[@"students"]];
+    existingFetch.predicate = [NSPredicate predicateWithFormat:@"name == %@", @"tttt"];
+    NSArray *array = [self.managedObjectContext executeFetchRequest:existingFetch error:NULL];
+    if ([array count] > 0) {
+        Techer *tt = [array firstObject];
+        NSLog(@"tt  is Fault %d", [tt isFault]);
+        //NSLog(@"============tt students: %@", tt.students);
+        NSLog(@"tt sname %@", tt.name);
+        //Student *sss = [tt.students anyObject];
+        tt.name = @"212121";
+        [self.managedObjectContext processPendingChanges];
+        NSLog(@"%@", [self.managedObjectContext updatedObjects]);
+        //NSLog(@"tt s count %u", [tt.students count]);
+        //NSLog(@"tt  is Fault %d", [tt isFault]);
+        /////
+        //Student *sss = [tt.students anyObject];
+        //NSLog(@"!!!!!!!!!%@", sss.name);
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -77,7 +232,7 @@
     
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
     if (coordinator != nil) {
-        _managedObjectContext = [[NSManagedObjectContext alloc] init];
+        _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         [_managedObjectContext setPersistentStoreCoordinator:coordinator];
     }
     return _managedObjectContext;
@@ -107,7 +262,12 @@
     
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+    
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
+                             [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption, nil];
+    
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:&error]) {
         /*
          Replace this implementation with code to handle the error appropriately.
          

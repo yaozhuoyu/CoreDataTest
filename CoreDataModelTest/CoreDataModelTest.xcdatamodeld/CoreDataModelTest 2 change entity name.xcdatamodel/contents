@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13E28" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="Student" representedClassName="Student" elementID="student_id" syncable="YES">
-        <attribute name="age" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
-        <attribute name="home" optional="YES" attributeType="String" syncable="YES"/>
+    <entity name="Student" representedClassName="Student" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="techer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Techer" inverseName="students" inverseEntity="Techer" syncable="YES"/>
     </entity>
-    <entity name="Techer" representedClassName="Techer" elementID="tttt" syncable="YES">
+    <entity name="Techer" representedClassName="Techer" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="students" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Student" inverseName="techer" inverseEntity="Student" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Student" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="Student" positionX="-63" positionY="-18" width="128" height="73"/>
         <element name="Techer" positionX="-54" positionY="-9" width="128" height="73"/>
     </elements>
 </model>

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5B86D0141996EF0A00BDA703 /* CoreDataModelTest.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5B86D0121996EF0A00BDA703 /* CoreDataModelTest.xcdatamodeld */; };
+		5B86D0171996F57A00BDA703 /* TestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B86D0161996F57A00BDA703 /* TestUtil.m */; };
+		5B86D01B1997B3DF00BDA703 /* Student.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B86D01A1997B3DF00BDA703 /* Student.m */; };
+		5BD059C0197705D700267720 /* Techer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BD059BF197705D700267720 /* Techer.m */; };
 		5BD12E5A1953BBC70040853D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BD12E591953BBC70040853D /* Foundation.framework */; };
 		5BD12E5C1953BBC70040853D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BD12E5B1953BBC70040853D /* CoreGraphics.framework */; };
 		5BD12E5E1953BBC70040853D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BD12E5D1953BBC70040853D /* UIKit.framework */; };
@@ -14,7 +18,6 @@
 		5BD12E661953BBC70040853D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5BD12E641953BBC70040853D /* InfoPlist.strings */; };
 		5BD12E681953BBC70040853D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BD12E671953BBC70040853D /* main.m */; };
 		5BD12E6C1953BBC70040853D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BD12E6B1953BBC70040853D /* AppDelegate.m */; };
-		5BD12E6F1953BBC70040853D /* CoreDataModelTest.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5BD12E6D1953BBC70040853D /* CoreDataModelTest.xcdatamodeld */; };
 		5BD12E711953BBC70040853D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5BD12E701953BBC70040853D /* Images.xcassets */; };
 		5BD12E781953BBC70040853D /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BD12E771953BBC70040853D /* XCTest.framework */; };
 		5BD12E791953BBC70040853D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BD12E591953BBC70040853D /* Foundation.framework */; };
@@ -35,6 +38,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5B86D0131996EF0A00BDA703 /* CoreDataModelTest.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModelTest.xcdatamodel; sourceTree = "<group>"; };
+		5B86D0151996F57A00BDA703 /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
+		5B86D0161996F57A00BDA703 /* TestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestUtil.m; sourceTree = "<group>"; };
+		5B86D0191997B3DF00BDA703 /* Student.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Student.h; sourceTree = "<group>"; };
+		5B86D01A1997B3DF00BDA703 /* Student.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Student.m; sourceTree = "<group>"; };
+		5BD059BE197705D700267720 /* Techer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Techer.h; sourceTree = "<group>"; };
+		5BD059BF197705D700267720 /* Techer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Techer.m; sourceTree = "<group>"; };
 		5BD12E561953BBC70040853D /* CoreDataModelTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreDataModelTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BD12E591953BBC70040853D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5BD12E5B1953BBC70040853D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -46,7 +56,6 @@
 		5BD12E691953BBC70040853D /* CoreDataModelTest-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreDataModelTest-Prefix.pch"; sourceTree = "<group>"; };
 		5BD12E6A1953BBC70040853D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5BD12E6B1953BBC70040853D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		5BD12E6E1953BBC70040853D /* CoreDataModelTest.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModelTest.xcdatamodel; sourceTree = "<group>"; };
 		5BD12E701953BBC70040853D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		5BD12E761953BBC70040853D /* CoreDataModelTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreDataModelTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BD12E771953BBC70040853D /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -117,9 +126,15 @@
 			children = (
 				5BD12E6A1953BBC70040853D /* AppDelegate.h */,
 				5BD12E6B1953BBC70040853D /* AppDelegate.m */,
+				5B86D0121996EF0A00BDA703 /* CoreDataModelTest.xcdatamodeld */,
 				5BD12E701953BBC70040853D /* Images.xcassets */,
-				5BD12E6D1953BBC70040853D /* CoreDataModelTest.xcdatamodeld */,
+				5B86D0191997B3DF00BDA703 /* Student.h */,
+				5B86D01A1997B3DF00BDA703 /* Student.m */,
+				5BD059BE197705D700267720 /* Techer.h */,
+				5BD059BF197705D700267720 /* Techer.m */,
 				5BD12E621953BBC70040853D /* Supporting Files */,
+				5B86D0151996F57A00BDA703 /* TestUtil.h */,
+				5B86D0161996F57A00BDA703 /* TestUtil.m */,
 			);
 			path = CoreDataModelTest;
 			sourceTree = "<group>";
@@ -249,8 +264,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				5BD12E6C1953BBC70040853D /* AppDelegate.m in Sources */,
+				5B86D0171996F57A00BDA703 /* TestUtil.m in Sources */,
 				5BD12E681953BBC70040853D /* main.m in Sources */,
-				5BD12E6F1953BBC70040853D /* CoreDataModelTest.xcdatamodeld in Sources */,
+				5B86D0141996EF0A00BDA703 /* CoreDataModelTest.xcdatamodeld in Sources */,
+				5BD059C0197705D700267720 /* Techer.m in Sources */,
+				5B86D01B1997B3DF00BDA703 /* Student.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,6 +390,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreDataModelTest/CoreDataModelTest-Prefix.pch";
 				INFOPLIST_FILE = "CoreDataModelTest/CoreDataModelTest-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -385,6 +404,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CoreDataModelTest/CoreDataModelTest-Prefix.pch";
 				INFOPLIST_FILE = "CoreDataModelTest/CoreDataModelTest-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -449,6 +469,7 @@
 				5BD12E8A1953BBC70040853D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5BD12E8B1953BBC70040853D /* Build configuration list for PBXNativeTarget "CoreDataModelTestTests" */ = {
 			isa = XCConfigurationList;
@@ -457,16 +478,17 @@
 				5BD12E8D1953BBC70040853D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		5BD12E6D1953BBC70040853D /* CoreDataModelTest.xcdatamodeld */ = {
+		5B86D0121996EF0A00BDA703 /* CoreDataModelTest.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				5BD12E6E1953BBC70040853D /* CoreDataModelTest.xcdatamodel */,
+				5B86D0131996EF0A00BDA703 /* CoreDataModelTest.xcdatamodel */,
 			);
-			currentVersion = 5BD12E6E1953BBC70040853D /* CoreDataModelTest.xcdatamodel */;
+			currentVersion = 5B86D0131996EF0A00BDA703 /* CoreDataModelTest.xcdatamodel */;
 			path = CoreDataModelTest.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
