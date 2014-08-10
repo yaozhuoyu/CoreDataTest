@@ -28,7 +28,11 @@
         
         //[self testOverwriteMergePolicyForTwoMocWithPsc];
         
-        [self testNoMergePolicyForTwoMocWithParentChild];
+        //[self testNoMergePolicyForTwoMocWithParentChild];
+        
+        //[self managedObjectContextDidSaveNotificationTest];
+        
+        [self managedObjectContextDidSaveNotificationTestMerge];
     });
     
 }
@@ -505,6 +509,163 @@
     student2.techer = tt;
     
     [self.appDelegate saveContext];
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+- (void)managedObjectContextDidSaveNotificationTest{
+    NSPersistentStoreCoordinator *coordinator = [self.appDelegate persistentStoreCoordinator];
+    
+    //创建两个moc
+    NSManagedObjectContext *mangeObjectContext1 = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    [mangeObjectContext1 performBlockAndWait:^{
+        [mangeObjectContext1 setPersistentStoreCoordinator:coordinator];
+    }];
+    
+    NSManagedObjectContext *mangeObjectContext2 = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    [mangeObjectContext2 performBlockAndWait:^{
+        //[mangeObjectContext2 setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+        [mangeObjectContext2 setPersistentStoreCoordinator:coordinator];
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(objectContextDidSave:) name:NSManagedObjectContextDidSaveNotification object:mangeObjectContext1];
+    
+    
+    
+    NSFetchRequest *studentFetch = [NSFetchRequest fetchRequestWithEntityName:@"Student"];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    [studentFetch setSortDescriptors:@[sortDescriptor]];
+    [studentFetch setFetchLimit:2];
+    
+    __block NSArray *studentArray1 = nil;
+    [mangeObjectContext1 performBlockAndWait:^{
+        studentArray1 = [mangeObjectContext1 executeFetchRequest:studentFetch error:NULL];
+    }];
+    
+    for (int i = 0; i < [studentArray1 count]; i++) {
+        Student *student = [studentArray1 objectAtIndex:i];
+        NSLog(@"moc1 student name(%@)", student.name);
+    }
+    
+    [mangeObjectContext1 performBlockAndWait:^{
+        for (int i = 0; i < [studentArray1 count]; i++) {
+            Student *student = [studentArray1 objectAtIndex:i];
+            student.name = @"change name";
+        }
+        
+        [mangeObjectContext1 save:NULL];
+        NSLog(@"save block end");
+    }];
+    
+    NSLog(@"function end");
+/*
+ 调用顺序：objectContextDidSave -> save block end -> function end
+*/
+}
+
+- (void) objectContextDidSave:(NSNotification *)notification{
+    NSLog(@"objectContextDidSave : %@",notification.userInfo);
+}
+
+///////////////////////////////
+
+- (void)managedObjectContextDidSaveNotificationTestMerge{
+    NSPersistentStoreCoordinator *coordinator = [self.appDelegate persistentStoreCoordinator];
+    
+    //创建两个moc
+    NSManagedObjectContext *mangeObjectContext1 = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    [mangeObjectContext1 performBlockAndWait:^{
+        [mangeObjectContext1 setPersistentStoreCoordinator:coordinator];
+    }];
+    
+    NSManagedObjectContext *mangeObjectContext2 = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    sMangeObjectContext2 = mangeObjectContext2;
+    [mangeObjectContext2 performBlockAndWait:^{
+        //[mangeObjectContext2 setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+        [mangeObjectContext2 setPersistentStoreCoordinator:coordinator];
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(objectContextDidSaveMerge:) name:NSManagedObjectContextDidSaveNotification object:mangeObjectContext1];
+    
+    
+    
+    NSFetchRequest *studentFetch = [NSFetchRequest fetchRequestWithEntityName:@"Student"];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    [studentFetch setSortDescriptors:@[sortDescriptor]];
+    [studentFetch setFetchLimit:2];
+    
+    __block NSArray *studentArray1 = nil;
+    [mangeObjectContext1 performBlockAndWait:^{
+        studentArray1 = [mangeObjectContext1 executeFetchRequest:studentFetch error:NULL];
+    }];
+    
+    for (int i = 0; i < [studentArray1 count]; i++) {
+        Student *student = [studentArray1 objectAtIndex:i];
+        NSLog(@"moc1 student name(%@)", student.name);
+    }
+    
+    __block NSArray *studentArray2 = nil;
+    [mangeObjectContext2 performBlockAndWait:^{
+        studentArray2 = [mangeObjectContext2 executeFetchRequest:studentFetch error:NULL];
+    }];
+    
+    
+    for (int i = 0; i < [studentArray2 count]; i++) {
+        Student *student = [studentArray2 objectAtIndex:i];
+        NSLog(@"moc2 student name(%@)", student.name);
+    }
+    
+    for (int i = 0; i < [studentArray2 count]; i++) {
+        Student *student = [studentArray2 objectAtIndex:i];
+        student.name = @"change name2";
+        //[mangeObjectContext2 deleteObject:student];
+    }
+    
+    
+    
+    [mangeObjectContext1 performBlockAndWait:^{
+        for (int i = 0; i < [studentArray1 count]; i++) {
+            Student *student = [studentArray1 objectAtIndex:i];
+            //student.name = @"change name";
+            [mangeObjectContext1 deleteObject:student];
+        }
+        NSError *error;
+        [mangeObjectContext1 save:&error];
+        if (error) {
+            NSLog(@"moc1 save error (%@)", error);
+        }
+    }];
+    
+    for (int i = 0; i < [studentArray2 count]; i++) {
+        Student *student = [studentArray2 objectAtIndex:i];
+        NSLog(@"moc2 student name(%@) isDelete (%d)", student.name, [student isDeleted]);
+    }
+    
+    [mangeObjectContext2 performBlockAndWait:^{
+        NSError *error;
+        [mangeObjectContext2 save:&error];
+        if (error) {
+            NSLog(@"moc2 save error (%@)", error);
+        }
+    }];
+    
+/*
+ 对于mergeChangesFromContextDidSaveNotification
+ 当两个moc操作同一个对象的时候，如果有一方delete的话，最后合并之后存储的时候是删除的，
+ 当两个moc操作同一个对象都修改的时候，则以原来的为准
+*/
+    
+}
+
+static NSManagedObjectContext *sMangeObjectContext2;
+
+- (void) objectContextDidSaveMerge:(NSNotification *)notification{
+    NSLog(@"objectContextDidSave : %@",notification.userInfo);
+    [sMangeObjectContext2 performBlockAndWait:^{
+        [sMangeObjectContext2 mergeChangesFromContextDidSaveNotification:notification];
+    }];
+    
 }
 
 
