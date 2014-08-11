@@ -14,7 +14,7 @@
 
 - (void)onTest{
     //需要先导入数据
-    [self createDataForMergePolicyTest];
+    //[self createDataForMergePolicyTest];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         
@@ -32,8 +32,11 @@
         
         //[self managedObjectContextDidSaveNotificationTest];
         
-        [self managedObjectContextDidSaveNotificationTestMerge];
+        //[self managedObjectContextDidSaveNotificationTestMerge];
     });
+    
+    
+    [self createDataForRelationFaultTest];
     
 }
 
@@ -509,6 +512,67 @@
     student2.techer = tt;
     
     [self.appDelegate saveContext];
+}
+
+- (void)createDataForRelationFaultTest{
+    Techer *tt = [NSEntityDescription insertNewObjectForEntityForName:@"Techer" inManagedObjectContext:self.appDelegate.managedObjectContext];
+    tt.name = @"techer";
+    
+    for (NSUInteger index = 0; index < 10; index++) {
+        Student *student = [NSEntityDescription insertNewObjectForEntityForName:@"Student" inManagedObjectContext:self.appDelegate.managedObjectContext];
+        student.name = [NSString stringWithFormat:@"yzy_%d", index];
+        student.age = @(index);
+        student.home = [NSString stringWithFormat:@"beijing_%d", index];
+        [tt addStudentsObject:student];
+    }
+    
+    [self.appDelegate saveContext];
+    [self.appDelegate.managedObjectContext reset];
+    
+    sleep(5);
+    
+    NSLog(@"==========================================================");
+    /*
+    //第一种批量pre fetch方法
+    NSFetchRequest *techerFetch = [NSFetchRequest fetchRequestWithEntityName:@"Techer"];
+    [techerFetch setFetchLimit:1];
+    
+    __block NSArray *techerArray1 = nil;
+    [self.appDelegate.managedObjectContext performBlockAndWait:^{
+        techerArray1 = [self.appDelegate.managedObjectContext executeFetchRequest:techerFetch error:NULL];
+    }];
+    
+    Techer *techer1 = [techerArray1 firstObject];
+    
+    NSArray *array = [techer1.students allObjects];
+    NSFetchRequest *sFetch = [NSFetchRequest fetchRequestWithEntityName:@"Student"];
+    sFetch.predicate = [NSPredicate predicateWithFormat:@"self IN %@", array];
+    [self.appDelegate.managedObjectContext executeFetchRequest:sFetch error:NULL];
+    
+    NSArray *allStudents = [techer1.students allObjects];
+    for (Student *student in allStudents) {
+        NSLog(@"student %@", student.name);
+    }
+    */
+    
+    //第2种批量pre fetch方法
+    NSFetchRequest *techerFetch = [NSFetchRequest fetchRequestWithEntityName:@"Techer"];
+    [techerFetch setRelationshipKeyPathsForPrefetching:@[@"students"]];
+    [techerFetch setFetchLimit:1];
+    
+    __block NSArray *techerArray1 = nil;
+    [self.appDelegate.managedObjectContext performBlockAndWait:^{
+        techerArray1 = [self.appDelegate.managedObjectContext executeFetchRequest:techerFetch error:NULL];
+    }];
+    
+    Techer *techer1 = [techerArray1 firstObject];
+    
+    NSArray *allStudents = [techer1.students allObjects];
+    for (Student *student in allStudents) {
+        NSLog(@"student %@", student.name);
+    }
+    
+    
 }
 
 
