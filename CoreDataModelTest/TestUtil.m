@@ -14,7 +14,7 @@
 
 - (void)onTest{
     //需要先导入数据
-    //[self createDataForMergePolicyTest];
+    [self createDataForMergePolicyTest];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         
@@ -28,7 +28,7 @@
         
         //[self testOverwriteMergePolicyForTwoMocWithPsc];
         
-        //[self testNoMergePolicyForTwoMocWithParentChild];
+        [self testNoMergePolicyForTwoMocWithParentChild];
         
         //[self managedObjectContextDidSaveNotificationTest];
         
@@ -36,7 +36,7 @@
     });
     
     
-    [self createDataForRelationFaultTest];
+    //[self createDataForRelationFaultTest];
     
 }
 
@@ -454,11 +454,14 @@
 
     [parentMOC performBlockAndWait:^{
         techer1.name = @"parent";
+        //[parentMOC save:NULL];
     }];
     
-    NSLog(@"techer1 is delete %d", [techer1 isDeleted]);
     
-    NSLog(@"parent techer name %@", techer1.name);
+    
+    //NSLog(@"techer1 is delete %d", [techer1 isDeleted]);
+    
+    //NSLog(@"parent techer name %@", techer1.name);
     [childMOC performBlockAndWait:^{
         NSError *error = nil;
         techer2.name = @"child";
@@ -477,8 +480,8 @@
             }];
         }
     }];
-    NSLog(@"parent techer name %@", techer1.name);
-    NSLog(@"techer1 is delete %d", [techer1 isDeleted]);
+    //NSLog(@"parent techer name %@", techer1.name);
+    //NSLog(@"techer1 is delete %d", [techer1 isDeleted]);
     
 //    [parentMOC performBlockAndWait:^{
 //        NSError *error = nil;
