@@ -34,14 +34,14 @@
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(objectDidChange:) name:NSManagedObjectContextObjectsDidChangeNotification object:self.managedObjectContext];
     
     //[self testCoreData];
-    //[self importLargeDatas];
+    [self importLargeDatas];
     
     //[self testManagedObjectContextInsertObjectMethod];
     //[self childContextSaveLargeDatas];
     
     testUtil_ = [[TestUtil alloc] init];
     testUtil_.appDelegate = self;
-    [testUtil_ onTest];
+    //[testUtil_ onTest];
     
     
     UIViewController *rrot = [[UIViewController alloc] init];
@@ -100,7 +100,9 @@
 
 - (void)importLargeDatas {
     NSLog(@"begin import  register count %d", [[self.managedObjectContext registeredObjects] count]);
-    for (NSUInteger index = 0; index < 5000; index++) {
+    
+    NSMutableArray *techerArr = [[NSMutableArray alloc] initWithCapacity:5000];
+    for (NSUInteger index = 0; index < 5; index++) {
         Techer *tt = [NSEntityDescription insertNewObjectForEntityForName:@"Techer" inManagedObjectContext:self.managedObjectContext];
         tt.name = [NSString stringWithFormat:@"techer name :(%d)", index];
         
@@ -110,11 +112,20 @@
             student.name = [NSString stringWithFormat:@"student name :(%d)", jndex];
             [tt addStudentsObject:student];
         }
+        
+        [techerArr addObject:tt];
     }
     NSLog(@"end import %d", [[self.managedObjectContext registeredObjects] count]);
     [self saveContext];
     NSLog(@"save import %d", [[self.managedObjectContext registeredObjects] count]);
     [self.managedObjectContext reset];
+    for (Techer *tt in techerArr) {
+        //[self.managedObjectContext refreshObject:tt mergeChanges:NO];
+        NSLog(@"tt %@, tt %@  tt isF %d",tt.name, tt.objectID, [tt isFault]);
+        //Techer *techaer =  (Techer *)[self.managedObjectContext existingObjectWithID:tt.objectID error:NULL];
+        Techer *techaer =  (Techer *)[self.managedObjectContext objectWithID:tt.objectID];
+        NSLog(@"tt name %@ ",techaer.name);
+    }
     NSLog(@"reset context %d", [[self.managedObjectContext registeredObjects] count]);
 }
 
