@@ -14,7 +14,8 @@
 
 - (void)onTest{
     //需要先导入数据
-    [self createDataForMergePolicyTest];
+    //[self createDataForMergePolicyTest];
+    //[self createDataForMuitThreadTest];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         
@@ -28,14 +29,14 @@
         
         //[self testOverwriteMergePolicyForTwoMocWithPsc];
         
-        [self testNoMergePolicyForTwoMocWithParentChild];
+        //[self testNoMergePolicyForTwoMocWithParentChild];
         
         //[self managedObjectContextDidSaveNotificationTest];
         
         //[self managedObjectContextDidSaveNotificationTestMerge];
     });
     
-    
+    [self testMutiThreadCoreData];
     //[self createDataForRelationFaultTest];
     
 }
@@ -734,6 +735,149 @@ static NSManagedObjectContext *sMangeObjectContext2;
     }];
     
 }
+
+
+- (void)createDataForMuitThreadTest{
+    
+    
+    for (NSUInteger jIndex = 0; jIndex < 1000; jIndex ++) {
+        Techer *tt = [NSEntityDescription insertNewObjectForEntityForName:@"Techer" inManagedObjectContext:self.appDelegate.managedObjectContext];
+        tt.name = [NSString stringWithFormat:@"techer_%d", jIndex];
+        
+        for (NSUInteger index = 0; index < 1000; index++) {
+            Student *student = [NSEntityDescription insertNewObjectForEntityForName:@"Student" inManagedObjectContext:self.appDelegate.managedObjectContext];
+            student.name = [NSString stringWithFormat:@"yzy_%d", index];
+            student.age = @(index);
+            student.home = [NSString stringWithFormat:@"beijing_%d", index];
+            [tt addStudentsObject:student];
+        }
+    }
+    
+    [self.appDelegate saveContext];
+    
+    
+}
+
+- (void)testMutiThreadCoreData{
+    NSPersistentStoreCoordinator *coordinator = [self.appDelegate persistentStoreCoordinator];
+    
+    //创建两个moc
+    NSManagedObjectContext *mangeObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    [mangeObjectContext performBlockAndWait:^{
+        [mangeObjectContext setPersistentStoreCoordinator:coordinator];
+    }];
+    
+    
+    NSMutableArray *queueArray = [[NSMutableArray alloc] initWithCapacity:0];
+    for (int i = 0; i < 20; i++) {
+        dispatch_queue_t queue = dispatch_queue_create([[NSString stringWithFormat:@"i+%d",i] UTF8String], NULL);
+        [queueArray addObject:queue];
+    }
+    
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_apply(2, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(size_t index) {
+            
+            dispatch_queue_t queue = queueArray[index%20];
+            dispatch_async(queue, ^{
+                if (index %2 ==0) {
+                    NSString *techerName = [NSString stringWithFormat:@"techer_%zu", index];
+                    NSFetchRequest *techerFetch = [NSFetchRequest fetchRequestWithEntityName:@"Techer"];
+                    techerFetch.predicate = [NSPredicate predicateWithFormat:@"name == %@", techerName];
+                    __block NSArray *techerArray1 = nil;
+                    [mangeObjectContext performBlockAndWait:^{
+                        techerArray1 = [mangeObjectContext executeFetchRequest:techerFetch error:NULL];
+                        
+                    }];
+                    
+                    
+                    NSLog(@"count %zu,  techer count %d", index,[techerArray1 count]);
+                    if ([techerArray1 count] > 0) {
+                        Techer *techer = [techerArray1 firstObject];
+                        NSLog(@"techer name %@",techer.name);
+                        NSSet *students = techer.students;
+                        NSMutableString *studentHomeApp = [[NSMutableString alloc] initWithCapacity:1000];
+                        for (Student *su in students) {
+                            [studentHomeApp appendString:[su home]];
+                            [studentHomeApp appendString:@"\t"];
+                        }
+                        NSLog(@"========= students name \n%@ ==========", studentHomeApp);
+                    }
+                }else{
+                    NSString *techerName = [NSString stringWithFormat:@"yzy_%zu", index];
+                    NSFetchRequest *techerFetch = [NSFetchRequest fetchRequestWithEntityName:@"Student"];
+                    techerFetch.predicate = [NSPredicate predicateWithFormat:@"name == %@", techerName];
+                    __block NSArray *techerArray1 = nil;
+                    [mangeObjectContext performBlockAndWait:^{
+                    techerArray1 = [mangeObjectContext executeFetchRequest:techerFetch error:NULL];
+                    }];
+                    //techerArray1 = [mangeObjectContext executeFetchRequest:techerFetch error:NULL];
+                    NSLog(@"count %zu,  student  count %d", index,[techerArray1 count]);
+                }
+            });
+            
+        });
+    });
+    
+    
+    
+    
+    
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        NSFetchRequest *techerFetch = [NSFetchRequest fetchRequestWithEntityName:@"Techer"];
+//        __block NSArray *techerArray1 = nil;
+//        [mangeObjectContext performBlockAndWait:^{
+//            techerArray1 = [mangeObjectContext executeFetchRequest:techerFetch error:NULL];
+//        }];
+//        NSLog(@"current thread %@", [NSThread currentThread]);
+//    });
+//    
+//    
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        NSFetchRequest *techerFetch = [NSFetchRequest fetchRequestWithEntityName:@"Student"];
+//        __block NSArray *techerArray1 = nil;
+//        [mangeObjectContext performBlockAndWait:^{
+//            techerArray1 = [mangeObjectContext executeFetchRequest:techerFetch error:NULL];
+//        }];
+//        NSLog(@"current thread %@", [NSThread currentThread]);
+//    });
+    
+    
+//    for (int i = 0; i < 200; i++) {
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            __block NSArray *techerArray1 = nil;
+//            [mangeObjectContext performBlockAndWait:^{
+//                techerArray1 = [mangeObjectContext executeFetchRequest:techerFetch error:NULL];
+//            }];
+//            NSLog(@"current thread %@", [NSThread currentThread]);
+//        });
+//    }
+    
+    
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @end

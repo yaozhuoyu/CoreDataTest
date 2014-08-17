@@ -34,14 +34,14 @@
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(objectDidChange:) name:NSManagedObjectContextObjectsDidChangeNotification object:self.managedObjectContext];
     
     //[self testCoreData];
-    [self importLargeDatas];
+    //[self importLargeDatas];
     
     //[self testManagedObjectContextInsertObjectMethod];
     //[self childContextSaveLargeDatas];
     
     testUtil_ = [[TestUtil alloc] init];
     testUtil_.appDelegate = self;
-    //[testUtil_ onTest];
+    [testUtil_ onTest];
     
     
     UIViewController *rrot = [[UIViewController alloc] init];
