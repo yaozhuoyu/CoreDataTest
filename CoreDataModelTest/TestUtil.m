@@ -13,6 +13,9 @@
 @implementation TestUtil
 
 - (void)onTest{
+    
+    [self testFetchRequestIsRequestToDisk];
+    
     //需要先导入数据
     //[self createDataForMergePolicyTest];
     //[self createDataForMuitThreadTest];
@@ -36,7 +39,7 @@
         //[self managedObjectContextDidSaveNotificationTestMerge];
     });
     
-    [self testMutiThreadCoreData];
+    //[self testMutiThreadCoreData];
     //[self createDataForRelationFaultTest];
     
 }
@@ -859,6 +862,50 @@ static NSManagedObjectContext *sMangeObjectContext2;
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////
+
+- (void)testFetchRequestIsRequestToDisk{
+    // import data
+    /*
+    for (NSUInteger jIndex = 0; jIndex < 2; jIndex ++) {
+        Techer *tt = [NSEntityDescription insertNewObjectForEntityForName:@"Techer" inManagedObjectContext:self.appDelegate.managedObjectContext];
+        tt.name = [NSString stringWithFormat:@"techer_%d", jIndex];
+        
+        for (NSUInteger index = 0; index < 2; index++) {
+            Student *student = [NSEntityDescription insertNewObjectForEntityForName:@"Student" inManagedObjectContext:self.appDelegate.managedObjectContext];
+            student.name = [NSString stringWithFormat:@"yzy_%d", index];
+            student.age = @(index);
+            student.home = [NSString stringWithFormat:@"beijing_%d", index];
+            [tt addStudentsObject:student];
+        }
+    }
+    
+    [self.appDelegate saveContext];
+    
+    */
+    //[self.appDelegate.managedObjectContext setStalenessInterval:0];
+    
+    NSFetchRequest *techerFetch = [NSFetchRequest fetchRequestWithEntityName:@"Techer"];
+    techerFetch.predicate = [NSPredicate predicateWithFormat:@"name == %@", @"techer_1"];
+    NSLog(@"================================");
+    NSArray *techerArray = [self.appDelegate.managedObjectContext executeFetchRequest:techerFetch error:NULL];
+    
+    Techer *techer = [techerArray firstObject];
+    
+    NSLog(@"techer name %@",techer.name);
+    
+    //////
+    NSLog(@"================================");
+    
+    NSFetchRequest *techerFetch2 = [NSFetchRequest fetchRequestWithEntityName:@"Techer"];
+    techerFetch2.predicate = [NSPredicate predicateWithFormat:@"name == %@", @"techer_0"];
+    NSArray *techerArray2 = [self.appDelegate.managedObjectContext executeFetchRequest:techerFetch2 error:NULL];
+    Techer *techer2 = [techerArray2 firstObject];
+    
+    NSLog(@"techer name %@",techer2.name);
+    
+}
 
 
 
